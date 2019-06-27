@@ -1,0 +1,3 @@
+import os
+
+local_sources = os.path.join(home_dir, 'local_sources')
