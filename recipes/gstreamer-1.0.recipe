@@ -1,7 +1,7 @@
 # -*- Mode: Python -*- vi:si:et:sw=4:sts=4:ts=4:syntax=python
 import shutil
 
-class Recipe(custom.GStreamer):
+class Recipe(custom.DescriptRecipe):
     name = 'gstreamer-1.0'
     btype = BuildType.MESON
     tarball_checksum = '0e8e2f7118be437cba879353970cf83c2acced825ecb9275ba05d9186ef07c00'

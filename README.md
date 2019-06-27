@@ -1,3 +1,39 @@
+# :warning: Descript Fork :warning:
+This is a fork of the official cerbero repository, customized to build picking
+up the sources that we need from our own local forks of those repos. Currently
+we are forking
+
+* Cerbero ([original repo](https://gitlab.freedesktop.org/gstreamer/cerbero), [this repo](https://github.com/descriptinc/descript-cerbero))
+* GStreamer ([original repo](https://gitlab.freedesktop.org/gstreamer/gstreamer),
+[our repo](https://github.com/descriptinc/descript-gstreamer))
+* GStreamer Editing Services ([original repo](https://gitlab.freedesktop.org/gstreamer/gst-editing-services),
+[our repo](https://github.com/descriptinc/descript-gst-editing-services))
+
+These forked repos _are not_ mirrors: they were cloned at some point and keeping
+them updated is a manual task. For the remainder of _this section_ let's keep the following
+convention:
+
+ * `origin` will refer to a remote on a clone of _this_ repo that points to our GitHub fork
+ * `upstream` will refer to a remote on a clone of _this_ repo that points to the original
+ GStreamer source repo
+
+That way, when we want to bring changes that were implemented in the official build, it is
+matter of merging from `upstream/master` into our `master`, where we also will have any
+patches that we want to consume.
+
+## Not Frequent, put _possibly_ asked questions
+
+### Why fork cerbero, the _build_ system?
+Because cerbero works by selecting the source for the build process from configuration
+files called "recipes". These recipes point to the upstream repos, which is useless to us.
+
+### What's with the `descript.cbc` config file
+By default, cerbero places a local cache of the sources it downloads into `~/.cache/<something>`.
+If you provide this config file to cerbero (using `-c config/descript.cbc`) it will instead place
+them under the build root, making the situation much more self-contained. It is not really an
+issue, but upon needing to clean up, it is easier to know you can just nuke the `build` dir
+and get rid of everything.
+
 # Description
 
 Cerbero is a cross-platform build aggregator for Open Source projects that builds
