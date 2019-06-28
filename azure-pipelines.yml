@@ -43,13 +43,13 @@ jobs:
     packageName: $(packageBaseName)-win-$(packageId)
 
   steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '3.x'
-      addToPath: true
 
-  - script: ulimit -a
-    displayName: Print limits
+  - script: |
+    sudo dpkg --add-architecture i386
+    sudo apt-get update
+    sudo apt-get install -y apt-utils
+    sudo apt-get install -y git python python3 python-setuptools python3-setuptools
+    displayName: Install dependencies
 
   - script: sudo ./cerbero-uninstalled -c config/cross-win64.cbc bootstrap -y
     displayName: Boostrapping cerbero
