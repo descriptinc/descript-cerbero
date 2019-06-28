@@ -18,7 +18,7 @@ jobs:
 
   steps:
 
-  - script: echo "##vso[task.setvariable variable=packageVersion]`cat VERSION`"
+  - script: echo "##vso[task.setvariable variable=packageVersion]`cat descript/descript-package-version`"
     displayName: Set the package $(packageBasename)-$(packageArch) version to $(packageVersion)
 
   - task: UsePythonVersion@0
@@ -39,8 +39,8 @@ jobs:
   steps:
 
   - script: |
-      type VERSION
-      set /p ENV_APP_VERSION= < VERSION
+      type descript\descript-package-version
+      set /p ENV_APP_VERSION= < descript\descript-package-version
       @echo ##vso[task.setvariable variable=appVersion]%ENV_APP_VERSION%
     displayName: Set the package $(packageBasename)-$(packageArch) version to $(packageVersion)
 
@@ -51,7 +51,7 @@ jobs:
     vmImage: 'ubuntu-16.04'
 
   steps:
-  - script: echo "##vso[task.setvariable variable=packageVersion]`cat VERSION`"
+  - script: echo "##vso[task.setvariable variable=packageVersion]`cat descript/descript-package-version`"
     displayName: Set the package $(packageBasename)-$(packageArch) version to $(packageVersion)
 
   - task: UsePythonVersion@0

@@ -27,12 +27,20 @@ patches that we want to consume.
 Because cerbero works by selecting the source for the build process from configuration
 files called "recipes". These recipes point to the upstream repos, which is useless to us.
 
-### What's with the `descript.cbc` config file
+### What's with the `descript/config.cbc` config file
 By default, cerbero places a local cache of the sources it downloads into `~/.cache/<something>`.
 If you provide this config file to cerbero (using `-c config/descript.cbc`) it will instead place
 them under the build root, making the situation much more self-contained. It is not really an
 issue, but upon needing to clean up, it is easier to know you can just nuke the `build` dir
 and get rid of everything.
+
+### Package version?
+As the proper GStreamer version is encoded in the source file themselves (_almost_ centrally,
+but not quite), we need a different way to tell builds apart. At fist the commit SHA of the
+HEAD at the moment of the build seemed like a good unique identifier (that would not need to
+be manually updated), but SHAs don't sort lexicographically, and would be generally harder to
+maintain. So a simple integer encoded a the `descript/descript-package-version file should be
+enough.
 
 # Description
 
