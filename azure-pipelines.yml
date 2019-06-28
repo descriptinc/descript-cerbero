@@ -51,16 +51,13 @@ jobs:
   - script: ulimit -a
     displayName: Print limits
 
-  - script: sudo ulimit -Hn unlimited && sudo ulimit -Sn 10240
-    displayName: Set the hard limit for file descriptor count
-
-  - script: ./cerbero-uninstalled -c config/cross-win64.cbc bootstrap -y
+  - script: sudo ./cerbero-uninstalled -c config/cross-win64.cbc bootstrap -y
     displayName: Boostrapping cerbero
 
-  - script: ./cerbero-uninstalled -c config/cross-win64.cbc package gstreamer-1.0
+  - script: sudo ./cerbero-uninstalled -c config/cross-win64.cbc package gstreamer-1.0
     displayName: Building package gstreamer-1.0
 
-  - script: ls
+  - script: ls -la
     displayName: Show contents
 
   - script: mkdir $(packageName)
