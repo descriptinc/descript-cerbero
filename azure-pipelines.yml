@@ -49,7 +49,7 @@ jobs:
       addToPath: true
 
   - script: ulimit -a
-    display: Print limits
+    displayName: Print limits
 
   - script: ulimit -Sn 10240
     displayName: Set the hard limit for file descriptor count
