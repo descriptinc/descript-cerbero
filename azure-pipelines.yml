@@ -15,7 +15,7 @@ jobs:
     vmImage: 'macOS-10.13'
 
   variables:
-    packageName: '$(packageBaseName)-mac-$(packageId)'
+    packageName: $(packageBaseName)-mac-$(packageId)
 
   steps:
 
@@ -36,12 +36,27 @@ jobs:
 - job: Windows
 
   pool:
-    vmImage: 'VS2017-Win2016'
+    # Windows can be cross-compiled from Linux
+    vmImage: 'ubuntu-16.04'
 
   variables:
-    packageName: '$(packageBaseName)-win-$(packageId)'
+    packageName: $(packageBaseName)-win-$(packageId)
 
   steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.x'
+      addToPath: true
+
+  - script: ./cerbero-uninstalled -c config/cross-win64.cbc bootstrap -y
+    displayName: Boostrapping cerbero
+
+  - script: ./cerbero-uninstalled -c config/cross-win64.cbc package gstreamer-1.0
+    displayName: Building package gstreamer-1.0
+
+  - script: ls
+    displayName: Show contents
+
   - script: mkdir $(packageName)
     displayName: Creating package $(packageName)
 
@@ -51,14 +66,24 @@ jobs:
     vmImage: 'ubuntu-16.04'
 
   variables:
-    packageName: '$(packageBaseName)-linux-$(packageId)'
+    packageName: $(packageBaseName)-linux-$(packageId)
 
   steps:
-  - script: mkdir $(packageName)
-    displayName: Creating package $(packageName)
 
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '3.x'
       addToPath: true
+
+  - script: ./cerbero-uninstalled bootstrap -y
+    displayName: Boostrapping cerbero
+
+  - script: ./cerbero-uninstalled package gstreamer-1.0
+    displayName: Building package gstreamer-1.0
+
+  - script: ls
+    displayName: Show contents
+
+  - script: mkdir $(packageName)
+    displayName: Creating package $(packageName)
 
