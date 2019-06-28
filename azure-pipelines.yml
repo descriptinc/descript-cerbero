@@ -48,6 +48,12 @@ jobs:
       versionSpec: '3.x'
       addToPath: true
 
+  - script: ulimit -a
+    display: Print limits
+
+  - script: ulimit -Sn 10240
+    displayName: Set the hard limit for file descriptor count
+
   - script: ./cerbero-uninstalled -c config/cross-win64.cbc bootstrap -y
     displayName: Boostrapping cerbero
 
