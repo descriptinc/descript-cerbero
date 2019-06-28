@@ -9,29 +9,29 @@ variables:
 
 jobs:
 
-- job: MacOS
+# - job: MacOS
 
-  pool:
-    vmImage: 'macOS-10.13'
+#   pool:
+#     vmImage: 'macOS-10.13'
 
-  variables:
-    packageName: $(packageBaseName)-mac-$(packageId)
+#   variables:
+#     packageName: $(packageBaseName)-mac-$(packageId)
 
-  steps:
+#   steps:
 
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '3.x'
-      addToPath: true
+#   - task: UsePythonVersion@0
+#     inputs:
+#       versionSpec: '3.x'
+#       addToPath: true
 
-  - script: ./cerbero-uninstalled bootstrap -y
-    displayName: Boostrapping cerbero
+#   - script: ./cerbero-uninstalled bootstrap -y
+#     displayName: Boostrapping cerbero
 
-  - script: ./cerbero-uninstalled package gstreamer-1.0
-    displayName: Building package gstreamer-1.0
+#   - script: ./cerbero-uninstalled package gstreamer-1.0
+#     displayName: Building package gstreamer-1.0
 
-  - script: mkdir $(packageName)
-    displayName: Creating package $(packageName)
+#   - script: mkdir $(packageName)
+#     displayName: Creating package $(packageName)
 
 - job: Windows
 
@@ -66,30 +66,30 @@ jobs:
   - script: mkdir $(packageName)
     displayName: Creating package $(packageName)
 
-- job: Linux
+# - job: Linux
 
-  pool:
-    vmImage: 'ubuntu-16.04'
+#   pool:
+#     vmImage: 'ubuntu-16.04'
 
-  variables:
-    packageName: $(packageBaseName)-linux-$(packageId)
+#   variables:
+#     packageName: $(packageBaseName)-linux-$(packageId)
 
-  steps:
+#   steps:
 
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '3.x'
-      addToPath: true
+#   - task: UsePythonVersion@0
+#     inputs:
+#       versionSpec: '3.x'
+#       addToPath: true
 
-  - script: ./cerbero-uninstalled bootstrap -y
-    displayName: Boostrapping cerbero
+#   - script: ./cerbero-uninstalled bootstrap -y
+#     displayName: Boostrapping cerbero
 
-  - script: ./cerbero-uninstalled package gstreamer-1.0
-    displayName: Building package gstreamer-1.0
+#   - script: ./cerbero-uninstalled package gstreamer-1.0
+#     displayName: Building package gstreamer-1.0
 
-  - script: ls
-    displayName: Show contents
+#   - script: ls
+#     displayName: Show contents
 
-  - script: mkdir $(packageName)
-    displayName: Creating package $(packageName)
+#   - script: mkdir $(packageName)
+#     displayName: Creating package $(packageName)
 
