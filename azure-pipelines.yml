@@ -51,7 +51,7 @@ jobs:
   - script: ulimit -a
     displayName: Print limits
 
-  - script: ulimit -Sn 10240
+  - script: ulimit -Hn unlimited && ulimit -Sn 10240
     displayName: Set the hard limit for file descriptor count
 
   - script: ./cerbero-uninstalled -c config/cross-win64.cbc bootstrap -y
