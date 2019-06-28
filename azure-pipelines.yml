@@ -1,0 +1,61 @@
+trigger:
+- master
+- develop
+
+variables:
+  packageBasename: 'descript-gstreamer'
+  hostCores: 2
+
+jobs:
+
+- job: MacOS
+
+  pool:
+    vmImage: 'macos10.13'
+
+  variables:
+    packageArch: 'mac'
+
+  steps:
+
+  - script: echo "##vso[task.setvariable variable=packageVersion]`cat VERSION`"
+    displayName: Set the package $(packageBasename)-$(packageArch) version to $(packageVersion)
+
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.x'
+      addToPath: true
+
+  - script: yes | ./cerbero-uninstalled bootstrap
+
+- job: Windows
+
+  pool:
+    vmImage: 'VS2017-Win2016'
+
+  variables:
+    packageArch: 'win'
+
+  steps:
+
+  - script: |
+      type VERSION
+      set /p ENV_APP_VERSION= < VERSION
+      @echo ##vso[task.setvariable variable=appVersion]%ENV_APP_VERSION%
+    displayName: Set the package $(packageBasename)-$(packageArch) version to $(packageVersion)
+
+
+- job: Linux
+
+  pool:
+    vmImage: 'ubuntu-16.04'
+
+  steps:
+  - script: echo "##vso[task.setvariable variable=packageVersion]`cat VERSION`"
+    displayName: Set the package $(packageBasename)-$(packageArch) version to $(packageVersion)
+
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.x'
+      addToPath: true
+
