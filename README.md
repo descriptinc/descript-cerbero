@@ -8,6 +8,10 @@ we are forking
 [our repo](https://github.com/descriptinc/descript-gstreamer))
 * GStreamer Editing Services ([original repo](https://gitlab.freedesktop.org/gstreamer/gst-editing-services),
 [our repo](https://github.com/descriptinc/descript-gst-editing-services))
+* GStreamer Base Plugins ([original repo](https://gitlab.freedesktop.org/gstreamer/gst-plugins-base),
+[our repo](https://github.com/descriptinc/descript-gst-plugins-base))
+* GStreamer Good Plugins ([original repo](https://gitlab.freedesktop.org/gstreamer/gst-plugins-good),
+[our repo](https://github.com/descriptinc/descript-gst-plugins-good))
 
 These forked repos _are not_ mirrors: they were cloned at some point and keeping
 them updated is a manual task. For the remainder of _this section_ let's keep the following
