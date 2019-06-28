@@ -4,6 +4,7 @@ trigger:
 
 variables:
   packageBasename: 'descript-gstreamer'
+  packageId: '$(Build.BuildNumber)'
   hostCores: 2
 
 jobs:
@@ -14,12 +15,9 @@ jobs:
     vmImage: 'macOS-10.13'
 
   variables:
-    packageArch: 'mac'
+    packageName: '$(packageBaseName)-mac-$(packageId)'
 
   steps:
-
-  - script: echo "##vso[task.setvariable variable=packageVersion]`cat descript/descript-package-version`"
-    displayName: Set the package $(packageBasename)-$(packageArch) version
 
   - task: UsePythonVersion@0
     inputs:
@@ -32,8 +30,8 @@ jobs:
   - script: ./cerbero-uninstalled package gstreamer-1.0
     displayName: Building package gstreamer-1.0
 
-  - script: mkdir $(packageBaseName)-$(packageArch)-$(packageVersion)
-    displayName: Creating package $(packageBaseName)-$(packageArch)-$(packageVersion)
+  - script: mkdir $(packageName)
+    displayName: Creating package $(packageName)
 
 - job: Windows
 
@@ -41,25 +39,23 @@ jobs:
     vmImage: 'VS2017-Win2016'
 
   variables:
-    packageArch: 'win'
+    packageName: '$(packageBaseName)-win-$(packageId)'
 
   steps:
-
-  - script: |
-      type descript\descript-package-version
-      set /p ENV_APP_VERSION= < descript\descript-package-version
-      @echo ##vso[task.setvariable variable=appVersion]%ENV_APP_VERSION%
-    displayName: Set the package $(packageBasename)-$(packageArch) version to $(packageVersion)
-
+  - script: mkdir $(packageName)
+    displayName: Creating package $(packageName)
 
 - job: Linux
 
   pool:
     vmImage: 'ubuntu-16.04'
 
+  variables:
+    packageName: '$(packageBaseName)-linux-$(packageId)'
+
   steps:
-  - script: echo "##vso[task.setvariable variable=packageVersion]`cat descript/descript-package-version`"
-    displayName: Set the package $(packageBasename)-$(packageArch) version to $(packageVersion)
+  - script: mkdir $(packageName)
+    displayName: Creating package $(packageName)
 
   - task: UsePythonVersion@0
     inputs:

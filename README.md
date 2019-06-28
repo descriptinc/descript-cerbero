@@ -38,14 +38,6 @@ them under the build root, making the situation much more self-contained. It is 
 issue, but upon needing to clean up, it is easier to know you can just nuke the `build` dir
 and get rid of everything.
 
-### Package version?
-As the proper GStreamer version is encoded in the source file themselves (_almost_ centrally,
-but not quite), we need a different way to tell builds apart. At fist the commit SHA of the
-HEAD at the moment of the build seemed like a good unique identifier (that would not need to
-be manually updated), but SHAs don't sort lexicographically, and would be generally harder to
-maintain. So a simple integer encoded a the `descript/descript-package-version file should be
-enough.
-
 # Description
 
 Cerbero is a cross-platform build aggregator for Open Source projects that builds
