@@ -45,10 +45,10 @@ jobs:
   steps:
 
   - script: |
-    sudo dpkg --add-architecture i386
-    sudo apt-get update
-    sudo apt-get install -y apt-utils
-    sudo apt-get install -y git python python3 python-setuptools python3-setuptools
+      sudo dpkg --add-architecture i386
+      sudo apt-get update
+      sudo apt-get install -y apt-utils
+      sudo apt-get install -y git python python3 python-setuptools python3-setuptools
     displayName: Install dependencies
 
   - script: sudo ./cerbero-uninstalled -c config/cross-win64.cbc bootstrap -y
