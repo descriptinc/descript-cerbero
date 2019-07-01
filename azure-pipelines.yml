@@ -10,6 +10,10 @@ variables:
 jobs:
 
 - job: MacOS
+  # Maximum allowed timeout. For an public project with public repos,
+  # this should be 360 min (6 hours) according to
+  # https://docs.microsoft.com/en-us/azure/devops/pipelines/process/phases?view=azure-devops&tabs=yaml#timeouts
+  timeoutInMinutes: 0
 
   pool:
     vmImage: 'macOS-10.13'
@@ -34,6 +38,7 @@ jobs:
     displayName: Creating package
 
 - job: Windows
+  timeoutInMinutes: 0
 
   pool:
     # Windows can be cross-compiled from Linux
@@ -67,6 +72,7 @@ jobs:
     displayName: Creating package
 
 - job: Linux
+  timeoutInMinutes: 0
 
   pool:
     vmImage: 'ubuntu-16.04'
