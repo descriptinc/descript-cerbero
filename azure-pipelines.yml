@@ -1,6 +1,9 @@
 trigger:
-- master
-- develop
+# 1.16 follows upstream/1.16 and receives the development branch changes
+- '1.16'
+
+# Development branch to merge into 1.16 when promoting a build.
+- 'develop_1.16'
 
 variables:
   packageBasename: 'descript-gstreamer'
