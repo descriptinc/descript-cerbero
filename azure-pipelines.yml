@@ -79,6 +79,9 @@ jobs:
 
   variables:
     packageName: $(packageBaseName)-linux-$(packageId)
+    archiveName: $(packageName).tar.gz
+    devArchiveName: $(packageName)-dev.tar.gz
+    dbgArchiveName: $(packageName)-dbg.tar.gz
 
   steps:
 
@@ -98,6 +101,43 @@ jobs:
   - script: ls
     displayName: Show contents
 
-  - script: mkdir $(packageName)
-    displayName: Creating package
+  - script: |
+    tar czf $(devArchiveName) gstreamer*-dev_*.deb
+    rm -f gstreamer*-dev_*.deb
+    tar czf $(dbgArchiveName)-dbg.tar.gz gstreamer*-dbg_*.deb
+    rm -f gstreamer*-dbg_*.deb
+    tar czf $(archiveName)-gstreamer*.deb
+    displayName: Create distribution packages
 
+  - script: ls
+    displayName: Show contents after packaging
+
+  - task: CopyFiles@2
+    inputs:
+      contents: $(archiveName)
+      targetFolder: $(Build.ArtifactStagingDirectory)
+
+  - task: CopyFiles@2
+    inputs:
+      contents: $(devArchiveName)
+      targetFolder: $(Build.ArtifactStagingDirectory)
+
+  - task: CopyFiles@2
+    inputs:
+      contents: $(dbgArchiveName)
+      targetFolder: $(Build.ArtifactStagingDirectory)
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)/$(archiveName)'
+      artifactName: $(packageBasename)-linux
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)/$(devArchiveName)'
+      artifactName: $(packageName)-linux-dev
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)/$(dbgArchiveName)'
+      artifactName: $(packageName)-linux-dbg
