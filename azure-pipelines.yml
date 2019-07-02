@@ -37,8 +37,31 @@ jobs:
   - script: ./cerbero-uninstalled package gstreamer-1.0
     displayName: Building package gstreamer-1.0
 
-  - script: mkdir $(packageName)
+  - script: |
+      tar czf $(packageName)-devel.tar.gz gstreamer-1.0-*-devel-*.pkg
+      rm -f gstreamer-1.0-*-devel-*.pkg
+      tar czf $(packageName).tar.gz gstreamer-1.0-*.pkg
+      rm -f gstreamer-1.0-*.pkg
     displayName: Creating package
+
+  - task: CopyFiles@2
+    inputs:
+      contents: '$(packageName)*.tar.gz'
+      targetFolder: $(Build.ArtifactStagingDirectory)
+      cleanTargetFolder: true
+    displayName: Copy output archives to staging
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)/$(packageName)-devel.tar.gz'
+      artifactName: $(packageBasename)-mac-devel
+    displayName: Publish devel output archive
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)/$(packageName).tar.gz'
+      artifactName: $(packageBasename)-mac
+    displayName: Publish output archive
 
 - job: Windows
   timeoutInMinutes: 0
