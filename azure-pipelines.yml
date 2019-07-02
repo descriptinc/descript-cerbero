@@ -10,6 +10,10 @@ variables:
   packageId: '$(Build.BuildNumber)'
   hostCores: 2
 
+# ####################################################################################
+# macOS
+# ####################################################################################
+
 jobs:
 
 - job: MacOS
@@ -42,13 +46,12 @@ jobs:
       rm -f gstreamer-1.0-*-devel-*.pkg
       tar czf $(packageName).tar.gz gstreamer-1.0-*.pkg
       rm -f gstreamer-1.0-*.pkg
-    displayName: Creating package
+    displayName: Create distribution packages
 
   - task: CopyFiles@2
     inputs:
       contents: '$(packageName)*.tar.gz'
       targetFolder: $(Build.ArtifactStagingDirectory)
-      cleanTargetFolder: true
     displayName: Copy output archives to staging
 
   - task: PublishBuildArtifacts@1
@@ -63,6 +66,10 @@ jobs:
       artifactName: $(packageBasename)-mac
     displayName: Publish output archive
 
+# ####################################################################################
+# Windows
+# ####################################################################################
+
 - job: Windows
   timeoutInMinutes: 0
 
@@ -72,6 +79,8 @@ jobs:
 
   variables:
     packageName: $(packageBaseName)-win-$(packageId)
+    archiveName: $(packageName).tar.gz
+    devArchiveName: $(packageName)-devel.tar.gz
 
   steps:
 
@@ -94,9 +103,42 @@ jobs:
   - script: ls -la
     displayName: Show contents
 
-  - script: mkdir $(packageName)
-    displayName: Creating package
+  # For windows only one tar.bz2 package is created on each variant, but, for
+  # consistency, package them into archives named just like in the other platforms
+  - script: |
+      tar czf $(devArchiveName) *-devel.tar.bz2
+      rm *-devel.tar.bz2
+      tar czf $(archiveName) *.tar.bz2
+      rm *.tar.bz2
+    displayName: Create distribution packages
 
+  - task: CopyFiles@2
+    inputs:
+      contents: '$(devArchiveName)'
+      targetFolder: $(Build.ArtifactStagingDirectory)
+    displayName: Copy dev output archive to staging
+
+  - task: CopyFiles@2
+    inputs:
+      contents: '$(archiveName)'
+      targetFolder: $(Build.ArtifactStagingDirectory)
+    displayName: Copy output archive to staging
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)/$(archiveName)'
+      artifactName: $(packageBasename)-win
+    displayName: Publish output package
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)/$(devArchiveName)'
+      artifactName: $(packageName)-win-dev
+    displayName: Publish dev output package
+
+# ####################################################################################
+# Linux
+# ####################################################################################
 - job: Linux
   timeoutInMinutes: 0
 
