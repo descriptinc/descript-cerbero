@@ -100,29 +100,28 @@ jobs:
   - script: sudo ./cerbero-uninstalled -c config/cross-win64.cbc package gstreamer-1.0
     displayName: Building package gstreamer-1.0
 
-  - script: ls -la
-    displayName: Show contents
+  - script: |
+      ls -la
+    displayName: Show contents & adjust permissions
+
+  - script: sudo chmod a+r *.tar.bz2
+    displayName: Make all the code/artifacts world readable
 
   # For windows only one tar.bz2 package is created on each variant, but, for
   # consistency, package them into archives named just like in the other platforms
+  # preserving the underlying package naming scheme that includes the version
   - script: |
-      tar czf $(devArchiveName) *-devel.tar.bz2
+      tar czf $(devArchiveName) --owner=0 --group=0 *-devel.tar.bz2
       rm *-devel.tar.bz2
-      tar czf $(archiveName) *.tar.bz2
+      tar czf $(archiveName) --owner=0 --group=0 *.tar.bz2
       rm *.tar.bz2
     displayName: Create distribution packages
 
   - task: CopyFiles@2
     inputs:
-      contents: '$(devArchiveName)'
+      contents: '*.tar.gz'
       targetFolder: $(Build.ArtifactStagingDirectory)
     displayName: Copy dev output archive to staging
-
-  - task: CopyFiles@2
-    inputs:
-      contents: '$(archiveName)'
-      targetFolder: $(Build.ArtifactStagingDirectory)
-    displayName: Copy output archive to staging
 
   - task: PublishBuildArtifacts@1
     inputs:
