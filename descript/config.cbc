@@ -1,8 +1,9 @@
 import os
 
-local_sources = os.path.join(home_dir, 'local_sources')
-build_tools_sources = os.path.join(home_dir, 'local_sources', 'build_tools')
+local_sources = os.path.join('cache', 'local_sources')
+build_tools_sources = os.path.join('cache', 'build_tools')
+cached_sources = os.path.join('cache', 'sources')
 
-extra_mirrors = ['https://descript-public.s3.us-west-2.amazonaws.com/descript-gstreamer/dep-mirror']
+#extra_mirrors = ['https://descript-public.s3.us-west-2.amazonaws.com/descript-gstreamer/dep-mirror']
 
 packager = 'Descript CI <ci@descript.com>'

@@ -6,16 +6,18 @@ trigger:
 - 'develop_1.16'
 
 variables:
+  depCache: dep_cache_1.16.tar.gz
+  depCacheURL: 'https://descript-public.s3.us-west-2.amazonaws.com/descript-gstreamer/dep-source-cache/$(depCache)'
   packageBasename: 'descript-gstreamer'
   packageId: '$(Build.BuildNumber)'
   hostCores: 2
 
-# ####################################################################################
-# macOS
-# ####################################################################################
 
 jobs:
 
+# ####################################################################################
+# macOS
+# ####################################################################################
 - job: MacOS
   # Maximum allowed timeout. For an public project with public repos,
   # this should be 360 min (6 hours) according to
@@ -34,6 +36,15 @@ jobs:
     inputs:
       versionSpec: '3.x'
       addToPath: true
+
+  # Download a cache of dependencies and place it where the configuration
+  # file will pick them up, avoiding network roundtrips and errors.
+  # The cache is oportunistic: if something is not there, it will be fetched.
+  - script: |
+    curl -OL $(depCacheURL)
+    tar xf $(depCache)
+    rm -f $(depCache)
+    displayName: Download the dependencies cache archive
 
   - script: ./cerbero-uninstalled -c descript/config.cbc show-config
     displayName: Show cerbero configuration
@@ -93,6 +104,12 @@ jobs:
       sudo apt-get install -y apt-utils
       sudo apt-get install -y git python python3 python-setuptools python3-setuptools
     displayName: Install dependencies
+
+  - script: |
+    curl -OL $(depCacheURL)
+    tar xf $(depCache)
+    rm -f $(depCache)
+    displayName: Download the dependencies cache archive
 
   - script: ./cerbero-uninstalled -c descript/config.cbc -c config/cross-win64.cbc show-config
     displayName: Show cerbero configuration
@@ -164,6 +181,12 @@ jobs:
       sudo apt-get install -y apt-utils
       sudo apt-get install -y git python python3 python-setuptools python3-setuptools
     displayName: Install dependencies
+
+  - script: |
+    curl -OL $(depCacheURL)
+    tar xf $(depCache)
+    rm -f $(depCache)
+    displayName: Download the dependencies cache archive
 
   - script: ./cerbero-uninstalled -c descript/config.cbc show-config
     displayName: Show cerbero configuration
