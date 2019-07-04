@@ -172,9 +172,9 @@ jobs:
   - script: |
       tar czf $(devArchiveName) gstreamer*-dev_*.deb
       rm -f gstreamer*-dev_*.deb
-      tar czf $(dbgArchiveName)-dbg.tar.gz gstreamer*-dbg_*.deb
+      tar czf $(dbgArchiveName) gstreamer*-dbg_*.deb
       rm -f gstreamer*-dbg_*.deb
-      tar czf $(archiveName)-gstreamer*.deb
+      tar czf $(archiveName) gstreamer*.deb
     displayName: Create distribution packages
 
   - script: ls
@@ -207,11 +207,11 @@ jobs:
   - task: PublishBuildArtifacts@1
     inputs:
       pathToPublish: '$(Build.ArtifactStagingDirectory)/$(devArchiveName)'
-      artifactName: $(packageName)-linux-dev
+      artifactName: $(packageBasename)-linux-dev
     displayName: Publish dev output package
 
   - task: PublishBuildArtifacts@1
     inputs:
       pathToPublish: '$(Build.ArtifactStagingDirectory)/$(dbgArchiveName)'
-      artifactName: $(packageName)-linux-dbg
+      artifactName: $(packageBasename)-linux-dbg
     displayName: Publish debug output package
