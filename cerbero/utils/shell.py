@@ -423,16 +423,12 @@ def download(url, destination=None, check_cert=True, overwrite=False, logfile=No
             os.makedirs(os.path.dirname(destination))
         log("Downloading {}".format(url), logfile)
 
-    urls = []
+    urls = [url]
     if mirrors is not None:
         filename = os.path.basename(url)
         # Add a traling '/' the url so that urljoin joins correctly urls
         # in case users provided it without the trailing '/'
         urls += [urllib.parse.urljoin(u + '/', filename) for u in mirrors]
-
-    # Put the original source at the end of the mirrors list, as we are going
-    # to set up a much more reliable source.
-    urls += [url]
 
     # wget shipped with msys fails with an SSL error on github URLs
     # https://githubengineering.com/crypto-removal-notice/
