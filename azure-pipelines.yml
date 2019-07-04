@@ -41,9 +41,9 @@ jobs:
   # file will pick them up, avoiding network roundtrips and errors.
   # The cache is oportunistic: if something is not there, it will be fetched.
   - script: |
-    curl -OL $(depCacheURL)
-    tar xf $(depCache)
-    rm -f $(depCache)
+      curl -OL $(depCacheURL)
+      tar xf $(depCache)
+      rm -f $(depCache)
     displayName: Download the dependencies cache archive
 
   - script: ./cerbero-uninstalled -c descript/config.cbc show-config
@@ -106,9 +106,9 @@ jobs:
     displayName: Install dependencies
 
   - script: |
-    curl -OL $(depCacheURL)
-    tar xf $(depCache)
-    rm -f $(depCache)
+      curl -OL $(depCacheURL)
+      tar xf $(depCache)
+      rm -f $(depCache)
     displayName: Download the dependencies cache archive
 
   - script: ./cerbero-uninstalled -c descript/config.cbc -c config/cross-win64.cbc show-config
@@ -183,9 +183,9 @@ jobs:
     displayName: Install dependencies
 
   - script: |
-    curl -OL $(depCacheURL)
-    tar xf $(depCache)
-    rm -f $(depCache)
+      curl -OL $(depCacheURL)
+      tar xf $(depCache)
+      rm -f $(depCache)
     displayName: Download the dependencies cache archive
 
   - script: ./cerbero-uninstalled -c descript/config.cbc show-config
