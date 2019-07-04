@@ -35,10 +35,13 @@ jobs:
       versionSpec: '3.x'
       addToPath: true
 
-  - script: ./cerbero-uninstalled bootstrap -y
+  - script: ./cerbero-uninstalled -c descript/config.cbc show-config
+    displayName: Show cerbero configuration
+
+  - script: ./cerbero-uninstalled -c descript/config.cbc bootstrap -y
     displayName: Boostrapping cerbero
 
-  - script: ./cerbero-uninstalled package gstreamer-1.0
+  - script: ./cerbero-uninstalled -c descript/config.cbc package gstreamer-1.0
     displayName: Building package gstreamer-1.0
 
   - script: |
@@ -91,13 +94,16 @@ jobs:
       sudo apt-get install -y git python python3 python-setuptools python3-setuptools
     displayName: Install dependencies
 
+  - script: ./cerbero-uninstalled -c descript/config.cbc -c config/cross-win64.cbc show-config
+    displayName: Show cerbero configuration
+
   # Normally it is not needed to run cerbero as root, but the script tries to
   # change the ulimit for the number of open files, and that fails otherwise,
   # and we don't really care for the user permissions here.
-  - script: sudo ./cerbero-uninstalled -c config/cross-win64.cbc bootstrap -y
+  - script: sudo ./cerbero-uninstalled -c descript/config.cbc -c config/cross-win64.cbc bootstrap -y
     displayName: Boostrapping cerbero
 
-  - script: sudo ./cerbero-uninstalled -c config/cross-win64.cbc package gstreamer-1.0
+  - script: sudo ./cerbero-uninstalled -c descript/config.cbc -c config/cross-win64.cbc package gstreamer-1.0
     displayName: Building package gstreamer-1.0
 
   - script: |
@@ -159,10 +165,13 @@ jobs:
       sudo apt-get install -y git python python3 python-setuptools python3-setuptools
     displayName: Install dependencies
 
-  - script: sudo ./cerbero-uninstalled bootstrap -y
+  - script: ./cerbero-uninstalled -c descript/config.cbc show-config
+    displayName: Show cerbero configuration
+
+  - script: sudo ./cerbero-uninstalled -c descript/config.cbc bootstrap -y
     displayName: Boostrapping cerbero
 
-  - script: sudo ./cerbero-uninstalled package gstreamer-1.0
+  - script: sudo ./cerbero-uninstalled -c descript/config.cbc package gstreamer-1.0
     displayName: Building package gstreamer-1.0
 
   - script: ls
