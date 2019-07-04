@@ -4,3 +4,5 @@ local_sources = os.path.join(home_dir, 'local_sources')
 build_tools_sources = os.path.join(home_dir, 'local_sources', 'build_tools')
 
 extra_mirrors = ['https://descript-public.s3.us-west-2.amazonaws.com/descript-gstreamer/dep-mirror']
+
+packager = 'Descript CI <ci@descript.com>'
