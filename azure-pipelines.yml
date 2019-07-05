@@ -33,6 +33,8 @@ jobs:
 
   variables:
     packageName: $(packageBaseName)-mac-$(packageId)
+    archiveName: $(packageName).tar.gz
+    devArchiveName: $(packageName)-devel.tar.gz
 
   steps:
 
@@ -61,29 +63,19 @@ jobs:
     displayName: Building package gstreamer-1.0
 
   - script: |
-      tar czf $(packageName)-devel.tar.gz gstreamer-1.0-*-devel-*.pkg
+      tar czf $(devArchiveName) gstreamer-1.0-*-devel-*.pkg
       rm -f gstreamer-1.0-*-devel-*.pkg
-      tar czf $(packageName).tar.gz gstreamer-1.0-*.pkg
+      tar czf $(archiveName) gstreamer-1.0-*.pkg
       rm -f gstreamer-1.0-*.pkg
     displayName: Create distribution packages
 
-  - task: CopyFiles@2
-    inputs:
-      contents: '$(packageName)*.tar.gz'
-      targetFolder: $(Build.ArtifactStagingDirectory)
-    displayName: Copy output archives to staging
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathToPublish: '$(Build.ArtifactStagingDirectory)/$(packageName)-devel.tar.gz'
-      artifactName: $(packageBasename)-mac-devel
-    displayName: Publish devel output archive
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathToPublish: '$(Build.ArtifactStagingDirectory)/$(packageName).tar.gz'
-      artifactName: $(packageBasename)-mac
+  - publish: $(archiveName)
+    artifact: $(packageBasename)-mac
     displayName: Publish output archive
+
+  - publish: $(devArchiveName)
+    artifact: $(packageBasename)-mac-devel
+    displayName: Publish dev output archive
 
 # ####################################################################################
 # Windows
@@ -146,23 +138,13 @@ jobs:
       rm *.tar.bz2
     displayName: Create distribution packages
 
-  - task: CopyFiles@2
-    inputs:
-      contents: '*.tar.gz'
-      targetFolder: $(Build.ArtifactStagingDirectory)
-    displayName: Copy dev output archive to staging
+  - publish: $(archiveName)
+    artifact: $(packageName)-win
+    displayName: Publish output archive
 
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathToPublish: '$(Build.ArtifactStagingDirectory)/$(archiveName)'
-      artifactName: $(packageBasename)-win
-    displayName: Publish output package
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathToPublish: '$(Build.ArtifactStagingDirectory)/$(devArchiveName)'
-      artifactName: $(packageName)-win-dev
-    displayName: Publish dev output package
+  - publish: $(devArchiveName)
+    artifact: $(packageName)-win-dev
+    displayName: Publish dev output archive
 
 # ####################################################################################
 # Linux
@@ -213,43 +195,20 @@ jobs:
       tar czf $(dbgArchiveName) gstreamer*-dbg_*.deb
       rm -f gstreamer*-dbg_*.deb
       tar czf $(archiveName) gstreamer*.deb
+      rm -f gstreamer*.deb
     displayName: Create distribution packages
 
   - script: ls
     displayName: Show contents after packaging
 
-  - task: CopyFiles@2
-    inputs:
-      contents: $(archiveName)
-      targetFolder: $(Build.ArtifactStagingDirectory)
-    displayName: Copy output archive to staging
+  - publish: $(archiveName)
+    artifact: $(packageBasename)-linux
+    displayName: Publish output archive
 
-  - task: CopyFiles@2
-    inputs:
-      contents: $(devArchiveName)
-      targetFolder: $(Build.ArtifactStagingDirectory)
-    displayName: Copy dev output archive to staging
+  - publish: $(devArchiveName)
+    artifact: $(packageBasename)-linux-dev
+    displayName: Publish dev output archive
 
-  - task: CopyFiles@2
-    inputs:
-      contents: $(dbgArchiveName)
-      targetFolder: $(Build.ArtifactStagingDirectory)
-    displayName: Copy debug output archive to staging
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathToPublish: '$(Build.ArtifactStagingDirectory)/$(archiveName)'
-      artifactName: $(packageBasename)-linux
-    displayName: Publish output package
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathToPublish: '$(Build.ArtifactStagingDirectory)/$(devArchiveName)'
-      artifactName: $(packageBasename)-linux-dev
-    displayName: Publish dev output package
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathToPublish: '$(Build.ArtifactStagingDirectory)/$(dbgArchiveName)'
-      artifactName: $(packageBasename)-linux-dbg
-    displayName: Publish debug output package
+  - publish: $(dbgArchiveName)
+    artifact: $(packageBasename)-linux-dbg
+    displayName: Publish dbg output archive
