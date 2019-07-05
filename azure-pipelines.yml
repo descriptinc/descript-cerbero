@@ -74,7 +74,7 @@ jobs:
     displayName: Publish output archive
 
   - publish: $(devArchiveName)
-    artifact: $(packageBasename)-mac-devel
+    artifact: $(packageBasename)-mac-dev
     displayName: Publish dev output archive
 
 # ####################################################################################
@@ -139,11 +139,11 @@ jobs:
     displayName: Create distribution packages
 
   - publish: $(archiveName)
-    artifact: $(packageName)-win
+    artifact: $(packageBaseName)-win
     displayName: Publish output archive
 
   - publish: $(devArchiveName)
-    artifact: $(packageName)-win-dev
+    artifact: $(packageBaseName)-win-dev
     displayName: Publish dev output archive
 
 # ####################################################################################
