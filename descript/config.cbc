@@ -1,9 +1,13 @@
 import os
 
-local_sources = os.path.join('cache', 'local_sources')
-build_tools_sources = os.path.join('cache', 'build_tools')
-cached_sources = os.path.join('cache', 'sources')
+# Pick up the environmental cache base
+cache_base = os.environ.get('CACHE_BASE_DIR')
+if not cache_base:
+    cache_base = '/tmp'
+cache_base = os.path.join(cache_base, 'cache')
 
-#extra_mirrors = ['https://descript-public.s3.us-west-2.amazonaws.com/descript-gstreamer/dep-mirror']
+local_sources = os.path.join(cache_base, 'local_sources')
+build_tools_sources = os.path.join(cache_base, 'build_tools')
+cached_sources = os.path.join(cache_base, 'sources')
 
 packager = 'Descript CI <ci@descript.com>'

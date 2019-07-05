@@ -12,6 +12,10 @@ variables:
   packageId: '$(Build.BuildNumber)'
   hostCores: 2
 
+  # All variables are mapped to environment variables. This one is picked up
+  # by the descript/config.cbc script. Used upper-snake-case to mimic normal
+  # env var naming conventions.
+  CACHE_BASE_DIR: '$(Pipeline.Workspace)'
 
 jobs:
 
@@ -41,6 +45,7 @@ jobs:
   # file will pick them up, avoiding network roundtrips and errors.
   # The cache is oportunistic: if something is not there, it will be fetched.
   - script: |
+      pushd $(CACHE_BASE_DIR)
       curl -OL $(depCacheURL)
       tar xf $(depCache)
       rm -f $(depCache)
@@ -110,6 +115,7 @@ jobs:
     displayName: Install dependencies
 
   - script: |
+      pushd $(CACHE_BASE_DIR)
       curl -OL $(depCacheURL)
       tar xf $(depCache)
       rm -f $(depCache)
@@ -191,6 +197,7 @@ jobs:
     displayName: Install dependencies
 
   - script: |
+      pushd $(CACHE_BASE_DIR)
       curl -OL $(depCacheURL)
       tar xf $(depCache)
       rm -f $(depCache)
