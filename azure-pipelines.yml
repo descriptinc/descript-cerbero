@@ -46,6 +46,10 @@ jobs:
       rm -f $(depCache)
     displayName: Download the dependencies cache archive
 
+  - script: |
+      ./cerbero-uninstalled -c descript/config.cbc fetch-bootstrap
+      ./cerbero-uninstalled -c descript/config.cbc fetch-package gstreamer-1.0 --deps
+
   - script: ./cerbero-uninstalled -c descript/config.cbc show-config
     displayName: Show cerbero configuration
 
@@ -110,6 +114,10 @@ jobs:
       tar xf $(depCache)
       rm -f $(depCache)
     displayName: Download the dependencies cache archive
+
+  - script: |
+      ./cerbero-uninstalled -c descript/config.cbc -c config/cross-win64.cbc fetch-bootstrap
+      ./cerbero-uninstalled -c descript/config.cbc -c config/cross-win64.cbc fetch-package gstreamer-1.0 --deps
 
   - script: ./cerbero-uninstalled -c descript/config.cbc -c config/cross-win64.cbc show-config
     displayName: Show cerbero configuration
@@ -187,6 +195,10 @@ jobs:
       tar xf $(depCache)
       rm -f $(depCache)
     displayName: Download the dependencies cache archive
+
+  - script: |
+      ./cerbero-uninstalled -c descript/config.cbc fetch-bootstrap
+      ./cerbero-uninstalled -c descript/config.cbc fetch-package gstreamer-1.0 --deps
 
   - script: ./cerbero-uninstalled -c descript/config.cbc show-config
     displayName: Show cerbero configuration
