@@ -63,10 +63,10 @@ jobs:
     displayName: Building package gstreamer-1.0
 
   - script: |
-      tar czf $(devArchiveName) gstreamer-1.0-*-devel-*.pkg
-      rm -f gstreamer-1.0-*-devel-*.pkg
-      tar czf $(archiveName) gstreamer-1.0-*.pkg
-      rm -f gstreamer-1.0-*.pkg
+      tar czf $(devArchiveName) gstreamer-1.0*-devel-*.pkg
+      rm -f gstreamer-1.0*-devel-*.pkg
+      tar czf $(archiveName) gstreamer-1.0*.pkg
+      rm -f gstreamer-1.0*.pkg
     displayName: Create distribution packages
 
   - publish: $(archiveName)
