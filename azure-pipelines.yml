@@ -9,7 +9,6 @@ variables:
   depCache: dep_cache_1.16.tar.gz
   depCacheURL: 'https://descript-public.s3.us-west-2.amazonaws.com/descript-gstreamer/dep-source-cache/$(depCache)'
   packageBasename: 'descript-gstreamer'
-  packageId: '$(Build.BuildNumber)'
   hostCores: 2
 
   # All variables are mapped to environment variables. This one is picked up
@@ -32,9 +31,9 @@ jobs:
     vmImage: 'macOS-10.13'
 
   variables:
-    packageName: $(packageBaseName)-mac-$(packageId)
+    packageName: $(packageBasename)-mac
     archiveName: $(packageName).tar.gz
-    devArchiveName: $(packageName)-devel.tar.gz
+    devArchiveName: $(packageName)-dev.tar.gz
 
   steps:
 
@@ -70,11 +69,11 @@ jobs:
     displayName: Create distribution packages
 
   - publish: $(archiveName)
-    artifact: $(packageBasename)-mac
+    artifact: $(packageName)
     displayName: Publish output archive
 
   - publish: $(devArchiveName)
-    artifact: $(packageBasename)-mac-dev
+    artifact: $(packageName)-dev
     displayName: Publish dev output archive
 
 # ####################################################################################
@@ -89,7 +88,7 @@ jobs:
     vmImage: 'ubuntu-16.04'
 
   variables:
-    packageName: $(packageBaseName)-win-$(packageId)
+    packageName: $(packageBasename)-win
     archiveName: $(packageName).tar.gz
     devArchiveName: $(packageName)-devel.tar.gz
 
@@ -139,11 +138,11 @@ jobs:
     displayName: Create distribution packages
 
   - publish: $(archiveName)
-    artifact: $(packageBaseName)-win
+    artifact: $(packageName)
     displayName: Publish output archive
 
   - publish: $(devArchiveName)
-    artifact: $(packageBaseName)-win-dev
+    artifact: $(packageName)-dev
     displayName: Publish dev output archive
 
 # ####################################################################################
@@ -156,7 +155,7 @@ jobs:
     vmImage: 'ubuntu-16.04'
 
   variables:
-    packageName: $(packageBaseName)-linux-$(packageId)
+    packageName: $(packageBasename)-linux
     archiveName: $(packageName).tar.gz
     devArchiveName: $(packageName)-dev.tar.gz
     dbgArchiveName: $(packageName)-dbg.tar.gz
@@ -202,13 +201,13 @@ jobs:
     displayName: Show contents after packaging
 
   - publish: $(archiveName)
-    artifact: $(packageBasename)-linux
+    artifact: $(packageName)
     displayName: Publish output archive
 
   - publish: $(devArchiveName)
-    artifact: $(packageBasename)-linux-dev
+    artifact: $(packageName)-dev
     displayName: Publish dev output archive
 
   - publish: $(dbgArchiveName)
-    artifact: $(packageBasename)-linux-dbg
+    artifact: $(packageName)-dbg
     displayName: Publish dbg output archive
