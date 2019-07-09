@@ -52,13 +52,13 @@ jobs:
       rm -f $(depCache)
     displayName: Download the dependencies cache archive
 
-  - script: ./cerbero-uninstalled -c descript/config.cbc show-config
+  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-mac.cbc show-config
     displayName: Show cerbero configuration
 
-  - script: ./cerbero-uninstalled -c descript/config.cbc bootstrap -y
+  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-mac.cbc bootstrap -y
     displayName: Boostrapping cerbero
 
-  - script: ./cerbero-uninstalled -c descript/config.cbc package gstreamer-1.0
+  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-mac.cbc package gstreamer-1.0
     displayName: Building package gstreamer-1.0
 
   - script: |
@@ -108,16 +108,16 @@ jobs:
       rm -f $(depCache)
     displayName: Download the dependencies cache archive
 
-  - script: ./cerbero-uninstalled -c descript/config.cbc -c config/cross-win64.cbc show-config
+  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-win.cbc -c config/cross-win64.cbc show-config
     displayName: Show cerbero configuration
 
   # Normally it is not needed to run cerbero as root, but the script tries to
   # change the ulimit for the number of open files, and that fails otherwise,
   # and we don't really care for the user permissions here.
-  - script: sudo ./cerbero-uninstalled -c descript/config.cbc -c config/cross-win64.cbc bootstrap -y
+  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-win.cbc -c config/cross-win64.cbc bootstrap -y
     displayName: Boostrapping cerbero
 
-  - script: sudo ./cerbero-uninstalled -c descript/config.cbc -c config/cross-win64.cbc package gstreamer-1.0
+  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-win.cbc -c config/cross-win64.cbc package gstreamer-1.0
     displayName: Building package gstreamer-1.0
 
   - script: |
@@ -176,13 +176,13 @@ jobs:
       rm -f $(depCache)
     displayName: Download the dependencies cache archive
 
-  - script: ./cerbero-uninstalled -c descript/config.cbc show-config
+  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-linux.cbc show-config
     displayName: Show cerbero configuration
 
-  - script: sudo ./cerbero-uninstalled -c descript/config.cbc bootstrap -y
+  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-linux.cbc bootstrap -y
     displayName: Boostrapping cerbero
 
-  - script: sudo ./cerbero-uninstalled -c descript/config.cbc package gstreamer-1.0
+  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-linux.cbc package gstreamer-1.0
     displayName: Building package gstreamer-1.0
 
   - script: ls
