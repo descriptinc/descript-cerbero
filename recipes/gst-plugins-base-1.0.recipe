@@ -1,7 +1,7 @@
 # -*- Mode: Python -*- vi:si:et:sw=4:sts=4:ts=4:syntax=python
 
 
-class Recipe(custom.GStreamer):
+class Recipe(custom.DescriptRecipe):
     name = 'gst-plugins-base-1.0'
     btype = BuildType.MESON
     tarball_checksum = '4093aa7b51e28fb24dfd603893fead8d1b7782f088b05ed0f22a21ef176fb5ae'

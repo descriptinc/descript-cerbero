@@ -1,0 +1,210 @@
+trigger:
+# The descript/1.16 branch branched of the 1.16 receives updates from the official 1.16 branch, 
+# as well as any change we want to cherry-pick in
+- 'descript/1.16'
+
+variables:
+  depCache: dep_cache_1.16.tar.gz
+  depCacheURL: 'https://descript-public.s3.us-west-2.amazonaws.com/descript-gstreamer/dep-source-cache/$(depCache)'
+  packageBasename: 'descript-gstreamer'
+  hostCores: 2
+
+  # All variables are mapped to environment variables. This one is picked up
+  # by the descript/config.cbc script. Used upper-snake-case to mimic normal
+  # env var naming conventions.
+  CACHE_BASE_DIR: '$(Pipeline.Workspace)'
+
+jobs:
+# ####################################################################################
+# macOS
+# ####################################################################################
+- job: MacOS
+  # Maximum allowed timeout. For an public project with public repos,
+  # this should be 360 min (6 hours) according to
+  # https://docs.microsoft.com/en-us/azure/devops/pipelines/process/phases?view=azure-devops&tabs=yaml#timeouts
+  timeoutInMinutes: 0
+
+  pool:
+    vmImage: 'macOS-10.13'
+
+  variables:
+    packageName: $(packageBasename)-mac
+    archiveName: $(packageName).tar.gz
+    devArchiveName: $(packageName)-dev.tar.gz
+
+  steps:
+
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.x'
+      addToPath: true
+
+  # Download a cache of dependencies and place it where the configuration
+  # file will pick them up, avoiding network roundtrips and errors.
+  # The cache is oportunistic: if something is not there, it will be fetched.
+  - script: |
+      pushd $(CACHE_BASE_DIR)
+      curl -OL $(depCacheURL)
+      tar xf $(depCache)
+      rm -f $(depCache)
+    displayName: Download the dependencies cache archive
+
+  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-mac.cbc show-config
+    displayName: Show cerbero configuration
+
+  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-mac.cbc bootstrap -y
+    displayName: Boostrapping cerbero
+
+  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-mac.cbc package gstreamer-1.0
+    displayName: Building package gstreamer-1.0
+
+  - script: |
+      tar czf $(devArchiveName) gstreamer-1.0*-devel-*.pkg
+      rm -f gstreamer-1.0*-devel-*.pkg
+      tar czf $(archiveName) gstreamer-1.0*.pkg
+      rm -f gstreamer-1.0*.pkg
+    displayName: Create distribution packages
+
+  - publish: $(archiveName)
+    artifact: $(packageName)
+    displayName: Publish output archive
+
+  - publish: $(devArchiveName)
+    artifact: $(packageName)-dev
+    displayName: Publish dev output archive
+
+# ####################################################################################
+# Windows
+# ####################################################################################
+
+- job: Windows
+  timeoutInMinutes: 0
+
+  pool:
+    # Windows can be cross-compiled from Linux
+    vmImage: 'ubuntu-16.04'
+
+  variables:
+    packageName: $(packageBasename)-win
+    archiveName: $(packageName).tar.gz
+    devArchiveName: $(packageName)-dev.tar.gz
+
+  steps:
+
+  - script: |
+      sudo dpkg --add-architecture i386
+      sudo apt-get update
+      sudo apt-get install -y apt-utils
+      sudo apt-get install -y git python python3 python-setuptools python3-setuptools
+    displayName: Install dependencies
+
+  - script: |
+      pushd $(CACHE_BASE_DIR)
+      curl -OL $(depCacheURL)
+      tar xf $(depCache)
+      rm -f $(depCache)
+    displayName: Download the dependencies cache archive
+
+  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-win.cbc -c config/cross-win64.cbc show-config
+    displayName: Show cerbero configuration
+
+  # Normally it is not needed to run cerbero as root, but the script tries to
+  # change the ulimit for the number of open files, and that fails otherwise,
+  # and we don't really care for the user permissions here.
+  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-win.cbc -c config/cross-win64.cbc bootstrap -y
+    displayName: Boostrapping cerbero
+
+  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-win.cbc -c config/cross-win64.cbc package gstreamer-1.0
+    displayName: Building package gstreamer-1.0
+
+  - script: |
+      ls -la
+    displayName: Show contents & adjust permissions
+
+  - script: sudo chmod a+r *.tar.bz2
+    displayName: Make all the code/artifacts world readable
+
+  # For windows only one tar.bz2 package is created on each variant, but, for
+  # consistency, package them into archives named just like in the other platforms
+  # preserving the underlying package naming scheme that includes the version
+  - script: |
+      tar czf $(devArchiveName) --owner=0 --group=0 *-devel.tar.bz2
+      rm *-devel.tar.bz2
+      tar czf $(archiveName) --owner=0 --group=0 *.tar.bz2
+      rm *.tar.bz2
+    displayName: Create distribution packages
+
+  - publish: $(archiveName)
+    artifact: $(packageName)
+    displayName: Publish output archive
+
+  - publish: $(devArchiveName)
+    artifact: $(packageName)-dev
+    displayName: Publish dev output archive
+
+# ####################################################################################
+# Linux
+# ####################################################################################
+- job: Linux
+  timeoutInMinutes: 0
+
+  pool:
+    vmImage: 'ubuntu-16.04'
+
+  variables:
+    packageName: $(packageBasename)-linux
+    archiveName: $(packageName).tar.gz
+    devArchiveName: $(packageName)-dev.tar.gz
+    dbgArchiveName: $(packageName)-dbg.tar.gz
+
+  steps:
+
+  - script: |
+      sudo dpkg --add-architecture i386
+      sudo apt-get update
+      sudo apt-get install -y apt-utils
+      sudo apt-get install -y git python python3 python-setuptools python3-setuptools
+    displayName: Install dependencies
+
+  - script: |
+      pushd $(CACHE_BASE_DIR)
+      curl -OL $(depCacheURL)
+      tar xf $(depCache)
+      rm -f $(depCache)
+    displayName: Download the dependencies cache archive
+
+  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-linux.cbc show-config
+    displayName: Show cerbero configuration
+
+  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-linux.cbc bootstrap -y
+    displayName: Boostrapping cerbero
+
+  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-linux.cbc package gstreamer-1.0
+    displayName: Building package gstreamer-1.0
+
+  - script: ls
+    displayName: Show contents
+
+  - script: |
+      tar czf $(devArchiveName) gstreamer*-dev_*.deb
+      rm -f gstreamer*-dev_*.deb
+      tar czf $(dbgArchiveName) gstreamer*-dbg_*.deb
+      rm -f gstreamer*-dbg_*.deb
+      tar czf $(archiveName) gstreamer*.deb
+      rm -f gstreamer*.deb
+    displayName: Create distribution packages
+
+  - script: ls
+    displayName: Show contents after packaging
+
+  - publish: $(archiveName)
+    artifact: $(packageName)
+    displayName: Publish output archive
+
+  - publish: $(devArchiveName)
+    artifact: $(packageName)-dev
+    displayName: Publish dev output archive
+
+  - publish: $(dbgArchiveName)
+    artifact: $(packageName)-dbg
+    displayName: Publish dbg output archive
