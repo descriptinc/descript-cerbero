@@ -223,13 +223,13 @@ stages:
         vmImage: 'ubuntu-16.04'
 
       steps:
-      - task: DownloadPipelineArtifacts@2
+      - task: DownloadPipelineArtifact@2
         inputs:
           buildType: 'current'
           artifactName: $(packageBasename)-mac
           targetPath: '/tmp-release'
 
-      - task: DownloadPipelineArtifacts@2
+      - task: DownloadPipelineArtifact@2
         inputs:
           buildType: 'current'
           artifactName: $(packageBasename)-mac-dev
@@ -252,13 +252,13 @@ stages:
         vmImage: 'ubuntu-16.04'
 
       steps:
-      - task: DownloadPipelineArtifacts@2
+      - task: DownloadPipelineArtifact@2
         inputs:
           buildType: 'current'
           artifactName: $(packageBasename)-win
           targetPath: '/tmp-release'
 
-      - task: DownloadPipelineArtifacts@2
+      - task: DownloadPipelineArtifact@2
         inputs:
           buildType: 'current'
           artifactName: $(packageBasename)-win-dev
