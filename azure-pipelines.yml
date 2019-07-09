@@ -1,16 +1,13 @@
 trigger:
-# 1.16 follows upstream/1.16 and receives the development branch changes
-- '1.16'
-
-# Development branch to merge into 1.16 when promoting a build.
-- 'develop_1.16'
+# The descript/1.16 branch branched of the 1.16 receives updates from the official 1.16 branch, 
+# as well as any change we want to cherry-pick in
+- 'descript/1.16'
 
 variables:
   depCache: dep_cache_1.16.tar.gz
   depCacheURL: 'https://descript-public.s3.us-west-2.amazonaws.com/descript-gstreamer/dep-source-cache/$(depCache)'
   packageBasename: 'descript-gstreamer'
   hostCores: 2
-  gstreamerVersion: '1.16.0.1'
 
   # All variables are mapped to environment variables. This one is picked up
   # by the descript/config.cbc script. Used upper-snake-case to mimic normal

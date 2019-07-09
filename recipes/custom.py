@@ -104,4 +104,4 @@ def list_gstreamer_1_0_plugins_by_category(config):
 class DescriptRecipe(GStreamer):
     stype = SourceType.GIT
     remotes = {'origin': 'https://github.com/descriptinc/descript-%(name)s.git'}
-    commit = 'origin/1.16'
+    commit = 'origin/descript/1.16'
