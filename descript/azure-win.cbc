@@ -1,3 +1,3 @@
 # According to documentation
 # See https://gstreamer.freedesktop.org/documentation/installing/building-from-source-using-cerbero.html?gi-language=c#build-a-single-project-with-gstreamer
-prefix = '/c/gstreamer/1.0/x86_64
+prefix = '/c/gstreamer/1.0/x86_64'
