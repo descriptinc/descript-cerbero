@@ -1,5 +1,5 @@
 trigger:
-# The descript/1.16 branch branched of the 1.16 receives updates from the official 1.16 branch, 
+# The descript/1.16 branch branched of the 1.16 receives updates from the official 1.16 branch,
 # as well as any change we want to cherry-pick in
 - 'descript/1.16'
 
@@ -63,6 +63,8 @@ jobs:
       rm -f gstreamer-1.0*-devel-*.pkg
       tar czf $(archiveName) gstreamer-1.0*.pkg
       rm -f gstreamer-1.0*.pkg
+      shasum -a 256 $(archiveName) > $(archiveName).sha256
+      shasum -a 256 $(devArchiveName) > $(devArchiveName).sha256
     displayName: Create distribution packages
 
   - publish: $(archiveName)
@@ -72,6 +74,14 @@ jobs:
   - publish: $(devArchiveName)
     artifact: $(packageName)-dev
     displayName: Publish dev output archive
+
+  - publish: $(archiveName).sha256
+    artifact: $(packageName)-sha256
+    displayName: Publish output archive SHA-256 sum
+
+  - publish: $(devArchiveName).sha256
+    artifact: $(packageName)-dev-sha256
+    displayName: Publish dev output archive SHA-256 sum
 
 # ####################################################################################
 # Windows
@@ -132,6 +142,8 @@ jobs:
       rm *-devel.tar.bz2
       tar czf $(archiveName) --owner=0 --group=0 *.tar.bz2
       rm *.tar.bz2
+      shasum -a 256 $(archiveName) > $(archiveName).sha256
+      shasum -a 256 $(devArchiveName) > $(devArchiveName).sha256
     displayName: Create distribution packages
 
   - publish: $(archiveName)
@@ -141,6 +153,14 @@ jobs:
   - publish: $(devArchiveName)
     artifact: $(packageName)-dev
     displayName: Publish dev output archive
+
+  - publish: $(archiveName).sha256
+    artifact: $(packageName)-sha256
+    displayName: Publish output archive SHA-256 sum
+
+  - publish: $(devArchiveName).sha256
+    artifact: $(packageName)-dev-sha256
+    displayName: Publish dev output archive SHA-256 sum
 
 # ####################################################################################
 # Linux
@@ -192,6 +212,9 @@ jobs:
       rm -f gstreamer*-dbg_*.deb
       tar czf $(archiveName) gstreamer*.deb
       rm -f gstreamer*.deb
+      shasum -a 256 $(archiveName) > $(archiveName).sha256
+      shasum -a 256 $(devArchiveName) > $(devArchiveName).sha256
+      shasum -a 256 $(dbgArchiveName) > $(dbgArchiveName).sha256
     displayName: Create distribution packages
 
   - script: ls
@@ -208,3 +231,15 @@ jobs:
   - publish: $(dbgArchiveName)
     artifact: $(packageName)-dbg
     displayName: Publish dbg output archive
+
+  - publish: $(archiveName).sha256
+    artifact: $(packageName)-sha256
+    displayName: Publish output archive SHA-256 sum
+
+  - publish: $(devArchiveName).sha256
+    artifact: $(packageName)-dev-sha256
+    displayName: Publish dev output archive SHA-256 sum
+
+  - publish: $(dbgArchiveName).sha256
+    artifact: $(packageName)-dbg-sha256
+    displayName: Publish dbg output archive SHA-256 sum
