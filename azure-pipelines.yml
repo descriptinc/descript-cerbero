@@ -218,7 +218,7 @@ jobs:
     displayName: Building package gstreamer-1.0
 
   - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-linux.cbc bundle-source gstreamer-1.0
-    displayName: Building package gstreamer-1.0
+    displayName: Bundle sources
 
   - script: ls
     displayName: Show contents
