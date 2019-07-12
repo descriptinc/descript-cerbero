@@ -1,6 +1,11 @@
 # -*- Mode: Python -*- vi:si:et:sw=4:sts=4:ts=4:syntax=python
 
 class Recipe(custom.DescriptRecipe):
+    #
+    # Descript fork commit to pick up
+    #
+    commit = 'descript-1.16-v1'
+
     name = 'gst-plugins-good-1.0'
     btype = BuildType.MESON
     tarball_checksum = '654adef33380d604112f702c2927574cfc285e31307b79e584113858838bb0fd'
@@ -10,7 +15,7 @@ class Recipe(custom.DescriptRecipe):
                      'flac': 'enabled',
                      'gdk-pixbuf': 'enabled',
                      'jpeg': 'enabled',
-                     'lame': 'enabled', 
+                     'lame': 'enabled',
                      'mpg123': 'enabled',
                      'png': 'enabled',
                      'soup': 'enabled',
