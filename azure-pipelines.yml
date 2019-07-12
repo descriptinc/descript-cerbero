@@ -283,6 +283,8 @@ stages:
 
     steps:
     - script: |
+        git config --global user.email "azure-ci@descript.com"
+        git config --global user.name "Azure CI for Descript"
         git rev-parse HEAD
         git tag -a -m "Build of $(Build.BuildNumber) descript-cerbero" Build-$(Build.BuildNumber)
         git push --tags
