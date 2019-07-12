@@ -277,7 +277,8 @@ stages:
 - stage: Tag_Source
   jobs:
   - job: Tag_Source
-    condition: always()
+    # Tag only when merging into the "main" branch
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/descript/1.16')
     pool:
       vmImage: 'ubuntu-16.04'
 
