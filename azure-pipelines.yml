@@ -22,7 +22,6 @@ stages:
   # macOS
   # ####################################################################################
   - job: MacOS
-    condition: false
 
     # Maximum allowed timeout. For an public project with public repos,
     # this should be 360 min (6 hours) according to
@@ -100,7 +99,6 @@ stages:
   # ####################################################################################
 
   - job: Windows
-    condition: false
     timeoutInMinutes: 0
 
     pool:
@@ -188,7 +186,6 @@ stages:
   # Linux
   # ####################################################################################
   - job: Linux
-    condition: false
     timeoutInMinutes: 0
 
     pool:
