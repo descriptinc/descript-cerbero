@@ -8,7 +8,7 @@ variables:
   depCacheURL: 'https://descript-public.s3.us-west-2.amazonaws.com/descript-gstreamer/dep-source-cache/$(depCache)'
   packageBasename: 'descript-gstreamer'
   hostCores: 2
-  cerberoVersion: '1.16.0.1'
+  gstreamerVersion: '1.16.0.1'
 
   # All variables are mapped to environment variables. This one is picked up
   # by the descript/config.cbc script. Used upper-snake-case to mimic normal
@@ -87,7 +87,8 @@ jobs:
     artifact: $(packageName)-dev-sha256
     displayName: Publish dev output archive SHA-256 sum
 
-  - publish: dist/cerbero-$(cerberoVersion).tar.gz
+  - script: sudo mv dist/cerbero-$(gstreamerVersion).tar.gz dist/cerbero-$(gstreamerVersion)-mac.tar.gz
+  - publish: dist/cerbero-$(gstreamerVersion)-mac.tar.gz
     artifact: $(packageName)-src
 
 # ####################################################################################
@@ -141,7 +142,7 @@ jobs:
   - script: sudo chmod a+r *.tar.bz2
     displayName: Make all the code/artifacts world readable
 
-# FIXME: Bundle sources fails for windows 
+# FIXME: Bundle sources fails for windows
 #  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-win.cbc -c config/cross-win64.cbc bundle-source gstreamer-1.0
 #    displayName: Bundle sources
 
@@ -174,7 +175,8 @@ jobs:
     displayName: Publish dev output archive SHA-256 sum
 
 # FIXME: When bundle-source works again, reenable.
-#  - publish: dist/cerbero-$(cerberoVersion).tar.gz
+#  - script: sudo mv dist/cerbero-$(gstreamerVersion).tar.gz dist/cerbero-$(gstreamerVersion)-win.tar.gz
+#  - publish: dist/cerbero-$(gstreamerVersion)-win.tar.gz
 #    artifact: $(packageName)-src
 
 # ####################################################################################
@@ -262,5 +264,6 @@ jobs:
     artifact: $(packageName)-dbg-sha256
     displayName: Publish dbg output archive SHA-256 sum
 
-  - publish: dist/cerbero-$(cerberoVersion).tar.gz
+  - script: sudo mv dist/cerbero-$(gstreamerVersion).tar.gz dist/cerbero-$(gstreamerVersion)-linux.tar.gz
+  - publish: dist/cerbero-$(gstreamerVersion)-linux.tar.gz
     artifact: $(packageName)-src
