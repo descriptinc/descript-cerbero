@@ -283,6 +283,6 @@ stages:
 
     steps:
     - script: |
-      git rev-parse HEAD
-      git tag -a -m "Build of $(Build.BuildNumber) descript-cerbero" Build-$(Build.BuildNumber)
-      git push --tags
+        git rev-parse HEAD
+        git tag -a -m "Build of $(Build.BuildNumber) descript-cerbero" Build-$(Build.BuildNumber)
+        git push --tags
