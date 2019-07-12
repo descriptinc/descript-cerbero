@@ -274,9 +274,9 @@ stages:
     - publish: dist/cerbero-$(gstreamerVersion)-linux.tar.gz
       artifact: $(packageName)-src
 
-- stage: Tag source
+- stage: Tag_Source
   jobs:
-  - job: Tag source
+  - job: Tag_Source
     condition: always()
     pool:
       vmImage: 'ubuntu-16.04'
