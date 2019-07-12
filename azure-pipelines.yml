@@ -282,6 +282,9 @@ stages:
       vmImage: 'ubuntu-16.04'
 
     steps:
+    - checkout: self
+      persistCredentials: true
+
     - script: |
         git config --global user.email "azure-ci@descript.com"
         git config --global user.name "Azure CI for Descript"
