@@ -31,13 +31,6 @@ patches that we want to consume.
 Because cerbero works by selecting the source for the build process from configuration
 files called "recipes". These recipes point to the upstream repos, which is useless to us.
 
-### What's with the `descript/config.cbc` config file
-By default, cerbero places a local cache of the sources it downloads into `~/.cache/<something>`.
-If you provide this config file to cerbero (using `-c config/descript.cbc`) it will instead place
-them under the build root, making the situation much more self-contained. It is not really an
-issue, but upon needing to clean up, it is easier to know you can just nuke the `build` dir
-and get rid of everything.
-
 # Description
 
 Cerbero is a cross-platform build aggregator for Open Source projects that builds
