@@ -15,255 +15,277 @@ variables:
   # env var naming conventions.
   CACHE_BASE_DIR: '$(Pipeline.Workspace)'
 
-jobs:
-# ####################################################################################
-# macOS
-# ####################################################################################
-- job: MacOS
-  # Maximum allowed timeout. For an public project with public repos,
-  # this should be 360 min (6 hours) according to
-  # https://docs.microsoft.com/en-us/azure/devops/pipelines/process/phases?view=azure-devops&tabs=yaml#timeouts
-  timeoutInMinutes: 0
+stages:
+- stage: Build
+  jobs:
+  # ####################################################################################
+  # macOS
+  # ####################################################################################
+  - job: MacOS
 
-  pool:
-    vmImage: 'macOS-10.13'
+    # Maximum allowed timeout. For an public project with public repos,
+    # this should be 360 min (6 hours) according to
+    # https://docs.microsoft.com/en-us/azure/devops/pipelines/process/phases?view=azure-devops&tabs=yaml#timeouts
+    timeoutInMinutes: 0
 
-  variables:
-    packageName: $(packageBasename)-mac
-    archiveName: $(packageName).tar.gz
-    devArchiveName: $(packageName)-dev.tar.gz
+    pool:
+      vmImage: 'macOS-10.13'
 
-  steps:
+    variables:
+      packageName: $(packageBasename)-mac
+      archiveName: $(packageName).tar.gz
+      devArchiveName: $(packageName)-dev.tar.gz
 
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '3.x'
-      addToPath: true
+    steps:
 
-  # Download a cache of dependencies and place it where the configuration
-  # file will pick them up, avoiding network roundtrips and errors.
-  # The cache is oportunistic: if something is not there, it will be fetched.
-  - script: |
-      pushd $(CACHE_BASE_DIR)
-      curl -OL $(depCacheURL)
-      tar xf $(depCache)
-      rm -f $(depCache)
-    displayName: Download the dependencies cache archive
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.x'
+        addToPath: true
 
-  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-mac.cbc show-config
-    displayName: Show cerbero configuration
+    # Download a cache of dependencies and place it where the configuration
+    # file will pick them up, avoiding network roundtrips and errors.
+    # The cache is oportunistic: if something is not there, it will be fetched.
+    - script: |
+        pushd $(CACHE_BASE_DIR)
+        curl -OL $(depCacheURL)
+        tar xf $(depCache)
+        rm -f $(depCache)
+      displayName: Download the dependencies cache archive
 
-  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-mac.cbc bootstrap -y
-    displayName: Boostrapping cerbero
+    - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-mac.cbc show-config
+      displayName: Show cerbero configuration
 
-  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-mac.cbc package gstreamer-1.0
-    displayName: Building package gstreamer-1.0
+    - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-mac.cbc bootstrap -y
+      displayName: Boostrapping cerbero
 
-  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-mac.cbc bundle-source gstreamer-1.0
-    displayName: Bundle sources
+    - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-mac.cbc package gstreamer-1.0
+      displayName: Building package gstreamer-1.0
 
-  - script: |
-      tar czf $(devArchiveName) gstreamer-1.0*-devel-*.pkg
-      rm -f gstreamer-1.0*-devel-*.pkg
-      tar czf $(archiveName) gstreamer-1.0*.pkg
-      rm -f gstreamer-1.0*.pkg
-      shasum -a 256 $(archiveName) > $(archiveName).sha256
-      shasum -a 256 $(devArchiveName) > $(devArchiveName).sha256
-    displayName: Create distribution packages
+    - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-mac.cbc bundle-source gstreamer-1.0
+      displayName: Bundle sources
 
-  - publish: $(archiveName)
-    artifact: $(packageName)
-    displayName: Publish output archive
+    - script: |
+        tar czf $(devArchiveName) gstreamer-1.0*-devel-*.pkg
+        rm -f gstreamer-1.0*-devel-*.pkg
+        tar czf $(archiveName) gstreamer-1.0*.pkg
+        rm -f gstreamer-1.0*.pkg
+        shasum -a 256 $(archiveName) > $(archiveName).sha256
+        shasum -a 256 $(devArchiveName) > $(devArchiveName).sha256
+      displayName: Create distribution packages
 
-  - publish: $(devArchiveName)
-    artifact: $(packageName)-dev
-    displayName: Publish dev output archive
+    - publish: $(archiveName)
+      artifact: $(packageName)
+      displayName: Publish output archive
 
-  - publish: $(archiveName).sha256
-    artifact: $(packageName)-sha256
-    displayName: Publish output archive SHA-256 sum
+    - publish: $(devArchiveName)
+      artifact: $(packageName)-dev
+      displayName: Publish dev output archive
 
-  - publish: $(devArchiveName).sha256
-    artifact: $(packageName)-dev-sha256
-    displayName: Publish dev output archive SHA-256 sum
+    - publish: $(archiveName).sha256
+      artifact: $(packageName)-sha256
+      displayName: Publish output archive SHA-256 sum
 
-  - script: sudo mv dist/cerbero-$(gstreamerVersion).tar.gz dist/cerbero-$(gstreamerVersion)-mac.tar.gz
-  - publish: dist/cerbero-$(gstreamerVersion)-mac.tar.gz
-    artifact: $(packageName)-src
+    - publish: $(devArchiveName).sha256
+      artifact: $(packageName)-dev-sha256
+      displayName: Publish dev output archive SHA-256 sum
 
-# ####################################################################################
-# Windows
-# ####################################################################################
+    - script: sudo mv dist/cerbero-$(gstreamerVersion).tar.gz dist/cerbero-$(gstreamerVersion)-mac.tar.gz
+    - publish: dist/cerbero-$(gstreamerVersion)-mac.tar.gz
+      artifact: $(packageName)-src
 
-- job: Windows
-  timeoutInMinutes: 0
+  # ####################################################################################
+  # Windows
+  # ####################################################################################
 
-  pool:
-    # Windows can be cross-compiled from Linux
-    vmImage: 'ubuntu-16.04'
+  - job: Windows
+    timeoutInMinutes: 0
 
-  variables:
-    packageName: $(packageBasename)-win
-    archiveName: $(packageName).tar.gz
-    devArchiveName: $(packageName)-dev.tar.gz
+    pool:
+      # Windows can be cross-compiled from Linux
+      vmImage: 'ubuntu-16.04'
 
-  steps:
+    variables:
+      packageName: $(packageBasename)-win
+      archiveName: $(packageName).tar.gz
+      devArchiveName: $(packageName)-dev.tar.gz
 
-  - script: |
-      sudo dpkg --add-architecture i386
-      sudo apt-get update
-      sudo apt-get install -y apt-utils
-      sudo apt-get install -y git python python3 python-setuptools python3-setuptools
-    displayName: Install dependencies
+    steps:
 
-  - script: |
-      pushd $(CACHE_BASE_DIR)
-      curl -OL $(depCacheURL)
-      tar xf $(depCache)
-      rm -f $(depCache)
-    displayName: Download the dependencies cache archive
+    - script: |
+        sudo dpkg --add-architecture i386
+        sudo apt-get update
+        sudo apt-get install -y apt-utils
+        sudo apt-get install -y git python python3 python-setuptools python3-setuptools
+      displayName: Install dependencies
 
-  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-win.cbc -c config/cross-win64.cbc show-config
-    displayName: Show cerbero configuration
+    - script: |
+        pushd $(CACHE_BASE_DIR)
+        curl -OL $(depCacheURL)
+        tar xf $(depCache)
+        rm -f $(depCache)
+      displayName: Download the dependencies cache archive
 
-  # Normally it is not needed to run cerbero as root, but the script tries to
-  # change the ulimit for the number of open files, and that fails otherwise,
-  # and we don't really care for the user permissions here.
-  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-win.cbc -c config/cross-win64.cbc bootstrap -y
-    displayName: Boostrapping cerbero
+    - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-win.cbc -c config/cross-win64.cbc show-config
+      displayName: Show cerbero configuration
 
-  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-win.cbc -c config/cross-win64.cbc package gstreamer-1.0
-    displayName: Building package gstreamer-1.0
+    # Normally it is not needed to run cerbero as root, but the script tries to
+    # change the ulimit for the number of open files, and that fails otherwise,
+    # and we don't really care for the user permissions here.
+    - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-win.cbc -c config/cross-win64.cbc bootstrap -y
+      displayName: Boostrapping cerbero
 
-  - script: |
-      ls -la
-    displayName: Show contents & adjust permissions
+    - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-win.cbc -c config/cross-win64.cbc package gstreamer-1.0
+      displayName: Building package gstreamer-1.0
 
-  - script: sudo chmod a+r *.tar.bz2
-    displayName: Make all the code/artifacts world readable
+    - script: |
+        ls -la
+      displayName: Show contents & adjust permissions
 
-# FIXME: Bundle sources fails for windows
-#  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-win.cbc -c config/cross-win64.cbc bundle-source gstreamer-1.0
-#    displayName: Bundle sources
+    - script: sudo chmod a+r *.tar.bz2
+      displayName: Make all the code/artifacts world readable
 
-  # For windows only one tar.bz2 package is created on each variant, but, for
-  # consistency, package them into archives named just like in the other platforms
-  # preserving the underlying package naming scheme that includes the version
-  - script: |
-      tar czf $(devArchiveName) --owner=0 --group=0 *-devel.tar.bz2
-      rm *-devel.tar.bz2
-      tar czf $(archiveName) --owner=0 --group=0 *.tar.bz2
-      rm *.tar.bz2
-      shasum -a 256 $(archiveName) > $(archiveName).sha256
-      shasum -a 256 $(devArchiveName) > $(devArchiveName).sha256
-    displayName: Create distribution packages
+  # FIXME: Bundle sources fails for windows
+  #  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-win.cbc -c config/cross-win64.cbc bundle-source gstreamer-1.0
+  #    displayName: Bundle sources
 
-  - publish: $(archiveName)
-    artifact: $(packageName)
-    displayName: Publish output archive
+    # For windows only one tar.bz2 package is created on each variant, but, for
+    # consistency, package them into archives named just like in the other platforms
+    # preserving the underlying package naming scheme that includes the version
+    - script: |
+        tar czf $(devArchiveName) --owner=0 --group=0 *-devel.tar.bz2
+        rm *-devel.tar.bz2
+        tar czf $(archiveName) --owner=0 --group=0 *.tar.bz2
+        rm *.tar.bz2
+        shasum -a 256 $(archiveName) > $(archiveName).sha256
+        shasum -a 256 $(devArchiveName) > $(devArchiveName).sha256
+      displayName: Create distribution packages
 
-  - publish: $(devArchiveName)
-    artifact: $(packageName)-dev
-    displayName: Publish dev output archive
+    - publish: $(archiveName)
+      artifact: $(packageName)
+      displayName: Publish output archive
 
-  - publish: $(archiveName).sha256
-    artifact: $(packageName)-sha256
-    displayName: Publish output archive SHA-256 sum
+    - publish: $(devArchiveName)
+      artifact: $(packageName)-dev
+      displayName: Publish dev output archive
 
-  - publish: $(devArchiveName).sha256
-    artifact: $(packageName)-dev-sha256
-    displayName: Publish dev output archive SHA-256 sum
+    - publish: $(archiveName).sha256
+      artifact: $(packageName)-sha256
+      displayName: Publish output archive SHA-256 sum
 
-# FIXME: When bundle-source works again, reenable.
-#  - script: sudo mv dist/cerbero-$(gstreamerVersion).tar.gz dist/cerbero-$(gstreamerVersion)-win.tar.gz
-#  - publish: dist/cerbero-$(gstreamerVersion)-win.tar.gz
-#    artifact: $(packageName)-src
+    - publish: $(devArchiveName).sha256
+      artifact: $(packageName)-dev-sha256
+      displayName: Publish dev output archive SHA-256 sum
 
-# ####################################################################################
-# Linux
-# ####################################################################################
-- job: Linux
-  timeoutInMinutes: 0
+  # FIXME: When bundle-source works again, reenable.
+  #  - script: sudo mv dist/cerbero-$(gstreamerVersion).tar.gz dist/cerbero-$(gstreamerVersion)-win.tar.gz
+  #  - publish: dist/cerbero-$(gstreamerVersion)-win.tar.gz
+  #    artifact: $(packageName)-src
 
-  pool:
-    vmImage: 'ubuntu-16.04'
+  # ####################################################################################
+  # Linux
+  # ####################################################################################
+  - job: Linux
+    timeoutInMinutes: 0
 
-  variables:
-    packageName: $(packageBasename)-linux
-    archiveName: $(packageName).tar.gz
-    devArchiveName: $(packageName)-dev.tar.gz
-    dbgArchiveName: $(packageName)-dbg.tar.gz
+    pool:
+      vmImage: 'ubuntu-16.04'
 
-  steps:
+    variables:
+      packageName: $(packageBasename)-linux
+      archiveName: $(packageName).tar.gz
+      devArchiveName: $(packageName)-dev.tar.gz
+      dbgArchiveName: $(packageName)-dbg.tar.gz
 
-  - script: |
-      sudo dpkg --add-architecture i386
-      sudo apt-get update
-      sudo apt-get install -y apt-utils
-      sudo apt-get install -y git python python3 python-setuptools python3-setuptools
-    displayName: Install dependencies
+    steps:
 
-  - script: |
-      pushd $(CACHE_BASE_DIR)
-      curl -OL $(depCacheURL)
-      tar xf $(depCache)
-      rm -f $(depCache)
-    displayName: Download the dependencies cache archive
+    - script: |
+        sudo dpkg --add-architecture i386
+        sudo apt-get update
+        sudo apt-get install -y apt-utils
+        sudo apt-get install -y git python python3 python-setuptools python3-setuptools
+      displayName: Install dependencies
 
-  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-linux.cbc show-config
-    displayName: Show cerbero configuration
+    - script: |
+        pushd $(CACHE_BASE_DIR)
+        curl -OL $(depCacheURL)
+        tar xf $(depCache)
+        rm -f $(depCache)
+      displayName: Download the dependencies cache archive
 
-  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-linux.cbc bootstrap -y
-    displayName: Boostrapping cerbero
+    - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-linux.cbc show-config
+      displayName: Show cerbero configuration
 
-  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-linux.cbc package gstreamer-1.0
-    displayName: Building package gstreamer-1.0
+    - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-linux.cbc bootstrap -y
+      displayName: Boostrapping cerbero
 
-  - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-linux.cbc bundle-source gstreamer-1.0
-    displayName: Bundle sources
+    - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-linux.cbc package gstreamer-1.0
+      displayName: Building package gstreamer-1.0
 
-  - script: ls
-    displayName: Show contents
+    - script: sudo ./cerbero-uninstalled -c descript/azure-base.cbc -c descript/azure-linux.cbc bundle-source gstreamer-1.0
+      displayName: Bundle sources
 
-  - script: |
-      tar czf $(devArchiveName) gstreamer*-dev_*.deb
-      rm -f gstreamer*-dev_*.deb
-      tar czf $(dbgArchiveName) gstreamer*-dbg_*.deb
-      rm -f gstreamer*-dbg_*.deb
-      tar czf $(archiveName) gstreamer*.deb
-      rm -f gstreamer*.deb
-      shasum -a 256 $(archiveName) > $(archiveName).sha256
-      shasum -a 256 $(devArchiveName) > $(devArchiveName).sha256
-      shasum -a 256 $(dbgArchiveName) > $(dbgArchiveName).sha256
-    displayName: Create distribution packages
+    - script: ls
+      displayName: Show contents
 
-  - script: ls
-    displayName: Show contents after packaging
+    - script: |
+        tar czf $(devArchiveName) gstreamer*-dev_*.deb
+        rm -f gstreamer*-dev_*.deb
+        tar czf $(dbgArchiveName) gstreamer*-dbg_*.deb
+        rm -f gstreamer*-dbg_*.deb
+        tar czf $(archiveName) gstreamer*.deb
+        rm -f gstreamer*.deb
+        shasum -a 256 $(archiveName) > $(archiveName).sha256
+        shasum -a 256 $(devArchiveName) > $(devArchiveName).sha256
+        shasum -a 256 $(dbgArchiveName) > $(dbgArchiveName).sha256
+      displayName: Create distribution packages
 
-  - publish: $(archiveName)
-    artifact: $(packageName)
-    displayName: Publish output archive
+    - script: ls
+      displayName: Show contents after packaging
 
-  - publish: $(devArchiveName)
-    artifact: $(packageName)-dev
-    displayName: Publish dev output archive
+    - publish: $(archiveName)
+      artifact: $(packageName)
+      displayName: Publish output archive
 
-  - publish: $(dbgArchiveName)
-    artifact: $(packageName)-dbg
-    displayName: Publish dbg output archive
+    - publish: $(devArchiveName)
+      artifact: $(packageName)-dev
+      displayName: Publish dev output archive
 
-  - publish: $(archiveName).sha256
-    artifact: $(packageName)-sha256
-    displayName: Publish output archive SHA-256 sum
+    - publish: $(dbgArchiveName)
+      artifact: $(packageName)-dbg
+      displayName: Publish dbg output archive
 
-  - publish: $(devArchiveName).sha256
-    artifact: $(packageName)-dev-sha256
-    displayName: Publish dev output archive SHA-256 sum
+    - publish: $(archiveName).sha256
+      artifact: $(packageName)-sha256
+      displayName: Publish output archive SHA-256 sum
 
-  - publish: $(dbgArchiveName).sha256
-    artifact: $(packageName)-dbg-sha256
-    displayName: Publish dbg output archive SHA-256 sum
+    - publish: $(devArchiveName).sha256
+      artifact: $(packageName)-dev-sha256
+      displayName: Publish dev output archive SHA-256 sum
 
-  - script: sudo mv dist/cerbero-$(gstreamerVersion).tar.gz dist/cerbero-$(gstreamerVersion)-linux.tar.gz
-  - publish: dist/cerbero-$(gstreamerVersion)-linux.tar.gz
-    artifact: $(packageName)-src
+    - publish: $(dbgArchiveName).sha256
+      artifact: $(packageName)-dbg-sha256
+      displayName: Publish dbg output archive SHA-256 sum
+
+    - script: sudo mv dist/cerbero-$(gstreamerVersion).tar.gz dist/cerbero-$(gstreamerVersion)-linux.tar.gz
+    - publish: dist/cerbero-$(gstreamerVersion)-linux.tar.gz
+      artifact: $(packageName)-src
+
+- stage: Tag_Source
+  jobs:
+  - job: Tag_Source
+    # Tag only when merging into the "main" branch
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/descript/1.16')
+    pool:
+      vmImage: 'ubuntu-16.04'
+
+    steps:
+    - checkout: self
+      persistCredentials: true
+
+    - script: |
+        git config --global user.email "azure-ci@descript.com"
+        git config --global user.name "Azure CI for Descript"
+        git rev-parse HEAD
+        git tag -a -m "Build of $(Build.BuildNumber) descript-cerbero" Build-$(Build.BuildNumber)
+        git push --tags
