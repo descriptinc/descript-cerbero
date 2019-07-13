@@ -4,7 +4,7 @@ class Recipe(custom.DescriptRecipe):
     #
     # Descript fork commit to pick up
     #
-    commit = 'descript-1.16-v1'
+    commit = 'descript-1.16-v2'
 
     name = 'gst-plugins-good-1.0'
     btype = BuildType.MESON
